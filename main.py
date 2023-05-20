@@ -1,5 +1,6 @@
 import numpy as np
 import math as m
+from openpyxl import load_workbook
 import matplotlib.pyplot as plt
 
 
@@ -28,7 +29,7 @@ def Ksum(z0, z, n):
 
 
 def H(n):
-    c=68
+    c=52
     h=c*n**(-1/5)
     return h
 
@@ -36,9 +37,9 @@ def H(n):
 def M(x0, x, y, n):
     sum = 0
     ksum = Ksum(x0, x, n)
+    hn = H(n)
     for i in range(len(x)):
-
-        sum += K((x0-x[i])/H(n))/ksum*y[i]
+        sum += (K((x0-x[i])/hn))/ksum*y[i]
     return sum
 
 
@@ -58,18 +59,50 @@ if __name__ == '__main__':
         x[i-1]=i*0.1
     y=Y(x)
     #print("y = ", y)
-    #plt.plot(x,y)
+    plt.plot(x,y)
     #plt.show()
     ypredict = np.zeros(n)
     E = np.zeros(n)
-    for j in range(n):
+    """for j in range(n):
         x0=x[j]
         xwithoutj = delete(j, x, n)
         y0=y[j]
         ywithoutj = delete(j, y, n)
         ypredict[j] = M(x0, xwithoutj, ywithoutj, n)
         E[j] = (ypredict[j]-y0)**2
-    #plt.plot(x,ypredict)
-    #plt.show()
-    print(sum(E))
+    plt.plot(x,ypredict)
+    plt.show()
+    print(sum(E))"""
 
+    n2=200
+    square=np.zeros(n2)
+    price = np.zeros(n2)
+    i=0
+    wb = load_workbook('./selection.xlsx')
+    sheet = wb['cian_parsing_result_sale_1_10_k']
+    for cellObj in sheet['I2':'I201']:
+        for cell in cellObj:
+            square[i] = cell.value
+            i+=1
+    print(square)
+    i=0
+    for cellObj in sheet['J2':'J201']:
+        for cell in cellObj:
+            price[i] = cell.value
+            i+=1
+    print(price)
+
+    plt.plot(square, price)
+    #plt.show()
+    ypredict2 = np.zeros(n2)
+    E2 = np.zeros(n2)
+    for j in range(n2):
+        x0=square[j]
+        squarewithoutj = delete(j, square, n2)
+        y0=price[j]
+        pricewithoutj = delete(j, price, n2)
+        ypredict2[j] = M(x0, squarewithoutj, pricewithoutj, n2)
+        E2[j] = (ypredict2[j]-y0)**2
+    plt.plot(square,ypredict2)
+    plt.show()
+    print(sum(E2))
