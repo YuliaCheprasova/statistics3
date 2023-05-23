@@ -29,7 +29,7 @@ def Ksum(z0, z, n):
 
 
 def H(n):
-    c=52
+    c=5
     h=c*n**(-1/5)
     return h
 
@@ -38,8 +38,11 @@ def M(x0, x, y, n):
     sum = 0
     ksum = Ksum(x0, x, n)
     hn = H(n)
-    for i in range(len(x)):
-        sum += (K((x0-x[i])/hn))/ksum*y[i]
+    if ksum==0:
+        sum=0
+    else:
+        for i in range(len(x)):
+            sum += (K((x0-x[i])/hn))/ksum*y[i]
     return sum
 
 
